@@ -1,0 +1,36 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
+steps:
+- task: Cache@2
+  inputs:
+    key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+    restoreKeys: |
+       yarn | "$(Agent.OS)"
+       yarn
+    path: $(YARN_CACHE_FOLDER)
+  displayName: Cache Yarn packages
+  
+- task: WhiteSource@21
+  inputs:
+    cwd: '$(System.DefaultWorkingDirectory)'
+    projectName: 'homebridge-apex-neptune'
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'PullRequest')))
+
+- script: yarn --frozen-lockfile
+  displayName: Installing Dependencies
+
+- script: yarn lint
+  displayName: Running Lint Tests
+
+- script: yarn build
+  displayName: Building App

@@ -1,0 +1,75 @@
+{
+    "mdns": {
+        "interface": "192.168.50.182"
+    },
+    "platforms": [
+        {
+            "name": "homebridge-apex-neptune",
+            "platform": "homebridge-apex-neptune",
+            "host_address": "192.168.50.55",
+            "host_port": null,
+            "serial_number": "Eta12s",
+            "username": "admin",
+            "password": "1234",
+            "probeRefreshInterval": 90,
+            "outletRefreshInterval": 20,
+            "tempProbes": [
+                {
+                    "name": "Tmp",
+                    "id": "base_Temp",
+                    "useFahrenheit": true
+                }
+            ],
+            "phProbes": [
+                {
+                    "name": "pH",
+                    "id": "base_pH"
+                }
+            ],
+            "saltProbes": [
+                {
+                    "name": "Salt",
+                    "id": "base_Cond"
+                }
+            ],
+            "ORPProbes": [
+                {
+                    "name": "ORP",
+                    "id": "base_ORP"
+                }
+            ],
+            "outlets": [
+                {
+                    "name": "Fuge_Light",
+                    "id": "2_10",
+                    "defaultOnState": 0,
+                    "shouldAutoOffShowOn": true
+                },
+                {
+                    "name": "Utility",
+                    "id": "2_8",
+                    "defaultOnState": 2,
+                    "shouldAutoOffShowOn": false
+                }
+            ],
+            "feedModes": [
+                {
+                    "name": "FeedA",
+                    "duration": 300
+                },
+                {
+                    "name": "FeedB",
+                    "duration": 1800
+                },
+                {
+                    "name": "FeedC",
+                    "duration": 3600
+                },
+                {
+                    "name": "FeedD",
+                    "duration": 7200
+                }
+            ]
+        }
+    ]
+}
