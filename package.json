@@ -2,15 +2,15 @@
   "private": true,
   "displayName": "homebridge-apex-neptune",
   "name": "homebridge-apex-neptune",
-  "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "version": "0.1.0",
+  "description": "This plugin connects a neptune apex device.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://dev.azure.com/thedigitalsages/npm-plugins/_git/homebridge-apex-neptune.git"
+    "url": "https://github.com/eddiebeazer/homebridge-apex-neptune.git"
   },
   "bugs": {
-    "url": "https://dev.azure.com/thedigitalsages/npm-plugins/_git/homebridge-apex-neptune"
+    "url": "https://github.com/eddiebeazer/homebridge-apex-neptune/issues"
   },
   "engines": {
     "node": ">=14.18.1",
@@ -19,6 +19,7 @@
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint src/**.ts --max-warnings=0",
+    "test": "echo testing not setup for this repo",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run lint && npm run build"

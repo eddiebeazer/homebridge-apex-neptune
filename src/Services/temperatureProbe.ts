@@ -7,7 +7,7 @@ import {DeviceType, NeptuneApexPlatform} from "../platform";
  * An instance of this class is created for each accessory your platform registers
  * Each accessory may expose multiple services of different service types.
  */
-export class TempProbe {
+export class TemperatureProbe {
   private service: Service;
 
   constructor(
@@ -17,9 +17,9 @@ export class TempProbe {
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, "Default-Manufacturer")
-      .setCharacteristic(this.platform.Characteristic.Model, "Default-Model")
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, "Default-Serial");
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, "Neptune Systems")
+      .setCharacteristic(this.platform.Characteristic.Model, "Generic Probe")
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.id);
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory

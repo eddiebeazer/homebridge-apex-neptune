@@ -5,11 +5,11 @@ import {
   PlatformAccessory,
   PlatformConfig,
   Service,
-  Characteristic
+  Characteristic, UnknownContext
 } from "homebridge";
 
 import {PLATFORM_NAME, PLUGIN_NAME} from "./settings";
-import {TempProbe} from "./Services/tempProbe";
+import {TemperatureProbe} from "./Services/temperatureProbe";
 import axios from "axios";
 import parser from "xml2json";
 import {GenericProbe} from "./Services/genericProbe";
@@ -26,7 +26,7 @@ export interface ApexOutlet {
 export interface ApexProbe {
   name: string;
   value: number;
-  type?: string;
+  type: ProbeType;
 }
 
 export interface FetchDeviceStatus {
@@ -39,13 +39,27 @@ interface ApexAccessory {
   name: string;
   id: string;
   onState?: number;
-  useFahrenheit?: boolean;
+  ProbeType?: ProbeType;
+  displayName?: string;
+}
+
+interface InitializeAccessory {
+  context: PlatformAccessory<UnknownContext>;
+  exists: boolean;
 }
 
 export enum DeviceType {
   Probe = "PROBE",
   Outlet = "OUTLET",
   Feed = "FEED"
+}
+
+export enum ProbeType {
+  Temperature = "TEMPERATURE",
+  PH = "PH",
+  ORP = "ORP",
+  Salinity = "SALINITY",
+  OTHER = "OTHER"
 }
 
 /**
@@ -82,9 +96,9 @@ export class NeptuneApexPlatform implements DynamicPlatformPlugin {
       await this.getApexStatus();
       // run the method to discover / register your devices as accessories
       this.discoverDevices();
-      //console.log("LENGTJH: ", this.accessories[0].context)
+
       // removing accessories
-      //this.accessories.forEach(accessory => api.unregisterPlatformAccessories("PLUGIN_NAME", "PLATFORM_NAME", [accessory]));
+      // this.accessories.forEach(accessory => api.unregisterPlatformAccessories("PLUGIN_NAME", "PLATFORM_NAME", [accessory]));
     });
   }
 
@@ -114,7 +128,7 @@ export class NeptuneApexPlatform implements DynamicPlatformPlugin {
     await this.refreshApexData(device.type);
 
     return device.type === DeviceType.Probe && this.probes.length > 0
-      ? this.probes.filter(probe => device.name === probe.name)[0].value
+      ? this.probes.filter(probe => device.name === probe.name || device.id === probe.name)[0].value
       : -1;
   }
 
@@ -229,62 +243,57 @@ export class NeptuneApexPlatform implements DynamicPlatformPlugin {
     }
   }
 
-  setupAccessory(device: ApexAccessory, type: DeviceType) {
+  // Used as a helper to set up all devices for this plugin
+  setupDevice(device: ApexAccessory): InitializeAccessory {
     const uuid = this.api.hap.uuid.generate(`${this.config.serial_number}-${device.name}-${device.id}`);
     const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
     if (existingAccessory) {
       // the accessory already exists
       this.log.info("Restoring existing accessory from cache:", existingAccessory.displayName);
-
-      // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-      // existingAccessory.context.device = device;
-      // this.api.updatePlatformAccessories([existingAccessory]);
-
       // create the accessory handler for the restored accessory
-      // this is imported from `platformAccessory.ts`
-      if (type === DeviceType.Probe) {
-        if (device.name === "Tmp" || device.name === "Temp" || device.id.includes("Temp")) {
-          new TempProbe(this, existingAccessory);
-        } else {
-          new GenericProbe(this, existingAccessory);
-        }
-      } else if (type === DeviceType.Outlet) {
-        new GenericOutlet(this, existingAccessory);
-      } else if (type === DeviceType.Feed) {
-        new FeedOutlet(this, existingAccessory);
-      }
-
-
-      // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
-      // remove platform accessories when no longer present
-      // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
-      // this.log.info('Removing existing accessory from cache:', existingAccessory.displayName);
+      return {context: existingAccessory, exists: true};
     } else {
       // the accessory does not yet exist, so we need to create it
       this.log.info("Adding new accessory:", device.name);
 
-      // create a new accessory
+      // create a new accessory and add the device options to its context
       const accessory = new this.api.platformAccessory(device.name, uuid);
-
-      // store a copy of the device object in the `accessory.context`
-      // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
+      return {context: accessory, exists: true};
+    }
+  }
 
-      if (type === DeviceType.Probe) {
-        if (device.name === "Tmp") {
-          new TempProbe(this, accessory);
-        } else {
-          new GenericProbe(this, accessory);
-        }
-      } else if (type === DeviceType.Outlet) {
-        new GenericOutlet(this, accessory);
-      } else if (type === DeviceType.Feed) {
-        new FeedOutlet(this, accessory);
-      }
+  setupFeedMode(device: ApexAccessory) {
+    const initializedAccessory = this.setupDevice(device);
+    new FeedOutlet(this, initializedAccessory.context);
 
-
+    if (!initializedAccessory.exists) {
       // link the accessory to your platform
-      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [initializedAccessory.context]);
+    }
+  }
+
+  setupProbe(device: ApexAccessory) {
+    const initializedAccessory = this.setupDevice(device);
+    if (device.ProbeType === ProbeType.Temperature) {
+      new TemperatureProbe(this, initializedAccessory.context);
+    } else {
+      new GenericProbe(this, initializedAccessory.context);
+    }
+
+    if (!initializedAccessory.exists) {
+      // link the accessory to your platform
+      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [initializedAccessory.context]);
+    }
+  }
+
+  setupOutlet(device: ApexAccessory) {
+    const initializedAccessory = this.setupDevice(device);
+    new GenericOutlet(this, initializedAccessory.context);
+
+    if (!initializedAccessory.exists) {
+      // link the accessory to your platform
+      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [initializedAccessory.context]);
     }
   }
 
@@ -294,24 +303,35 @@ export class NeptuneApexPlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
-    const probeTypes = ["tempProbes", "phProbes", "saltProbes", "ORPProbes"];
-    // const wattageTrackingEnabled = this.config.wattageMode.enable;
-
     // Setting up probes
-    for (const probeType of probeTypes) {
-      for (const probe of this.config[probeType]) {
-        this.setupAccessory(probe, DeviceType.Probe);
-      }
+    for (const probe of this.config.probes) {
+      this.setupProbe(probe);
+    }
+
+    // Setting up Trident
+    if (this.config.trident && this.config.trident.id) {
+      [{
+        id: `Alkx${this.config.trident.id}`,
+        name: "Alkalinity"
+      }, {
+        id: `Cax${this.config.trident.id}`,
+        name: "Calcium"
+      }, {
+        id: `Mgx${this.config.trident.id}`,
+        name: "Magnesium"
+      }].forEach(tridentProbe => this.setupProbe({
+        id: tridentProbe.id, name: tridentProbe.name, ProbeType: ProbeType.OTHER
+      }));
     }
 
     // Setting up outlets
     for (const outlet of this.config.outlets) {
-      this.setupAccessory(outlet, DeviceType.Outlet);
+      this.setupOutlet(outlet);
     }
 
     // setting up feed modes
     for (const feedMode of this.config.feedModes) {
-      this.setupAccessory(feedMode, DeviceType.Feed);
+      this.setupFeedMode(feedMode);
     }
   }
 }

@@ -17,9 +17,9 @@ export class GenericOutlet {
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, "Default-Manufacturer")
-      .setCharacteristic(this.platform.Characteristic.Model, "Default-Model")
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, "Default-Serial");
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, "Neptune Systems")
+      .setCharacteristic(this.platform.Characteristic.Model, "Generic Outlet")
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.id);
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
@@ -29,7 +29,7 @@ export class GenericOutlet {
 
     // set the service name, this is what is displayed as the default name on the Home app
     // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
+    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
 
     const {
       name,
