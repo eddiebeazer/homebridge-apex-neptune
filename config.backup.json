@@ -1,72 +1,76 @@
 {
-    "mdns": {
-        "interface": "192.168.50.182"
+    "bridge": {
+        "bind": ["YOUR_DEV_IP"],
+        "port": 51253,
+        "username": "0E:20:B7:D6:61:06",
+        "advertiser": "ciao"
     },
     "platforms": [
         {
             "name": "homebridge-apex-neptune",
             "platform": "homebridge-apex-neptune",
-            "host_address": "192.168.50.55",
+            "host_address": "YOUR_APEX_UP",
             "host_port": null,
             "serial_number": "Eta12s",
-            "username": "admin",
-            "password": "1234",
-            "probeRefreshInterval": 90,
-            "outletRefreshInterval": 20,
-            "tempProbes": [
+            "username": "YOUR_APEX_LOCAL_USER(admin)",
+            "password": "YOUR_APEX_LOCAL_PW(1234)",
+            "probeRefreshInterval": 300,
+            "outletRefreshInterval": 60,
+            "probes": [
                 {
                     "name": "Tmp",
                     "id": "base_Temp",
-                    "useFahrenheit": true
-                }
-            ],
-            "phProbes": [
+                    "type": "Temperature"
+                },
                 {
                     "name": "pH",
-                    "id": "base_pH"
-                }
-            ],
-            "saltProbes": [
+                    "id": "base_pH",
+                    "type": "PH"
+                },
                 {
                     "name": "Salt",
-                    "id": "base_Cond"
-                }
-            ],
-            "ORPProbes": [
+                    "id": "base_Cond",
+                    "type": "Salinity"
+                },
                 {
                     "name": "ORP",
-                    "id": "base_ORP"
+                    "id": "base_ORP",
+                    "type": "ORP"
                 }
             ],
             "outlets": [
                 {
-                    "name": "Fuge_Light",
-                    "id": "2_10",
+                    "name": "Open",
+                    "displayName": "Sand Pump",
+                    "id": "2_7",
                     "defaultOnState": 0,
                     "shouldAutoOffShowOn": true
                 },
                 {
                     "name": "Utility",
+                    "displayName": "Utility Pump",
                     "id": "2_8",
                     "defaultOnState": 2,
                     "shouldAutoOffShowOn": false
                 }
             ],
+            "trident": {
+                "id": 7
+            },
             "feedModes": [
                 {
                     "name": "FeedA",
+                    "displayName": "Fish Feed",
                     "duration": 300
                 },
                 {
-                    "name": "FeedB",
-                    "duration": 1800
-                },
-                {
                     "name": "FeedC",
+                    "displayName": "Power Head Cycle",
                     "duration": 3600
                 },
                 {
                     "name": "FeedD",
+                    "displayName": "Return Pump Cycle",
                     "duration": 7200
                 }
             ]
