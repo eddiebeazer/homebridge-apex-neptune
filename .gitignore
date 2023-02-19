@@ -125,3 +125,5 @@ dist
 .vscode/
 
 .fleet/
+
+config.backup.json
