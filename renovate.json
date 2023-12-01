@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "config:best-practices",
+    "config:js-app",
+    "npm:unpublishSafe",
+    ":automergeMinor",
+    ":automergePr",
+    ":automergeRequireAllStatusChecks",
+    ":npm"
+  ],
+  "assignees": ["eddiebeazer"],
+  "lockFileMaintenance": { "enabled": true }
+}
