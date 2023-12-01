@@ -8,6 +8,7 @@
     ":automergeRequireAllStatusChecks",
     ":npm"
   ],
+  "ignoreDeps": ["node"],
   "assignees": ["eddiebeazer"],
   "lockFileMaintenance": { "enabled": true }
 }
