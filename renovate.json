@@ -4,9 +4,11 @@
     "config:js-app",
     "npm:unpublishSafe",
     ":automergeMinor",
-    ":automergePr",
     ":automergeRequireAllStatusChecks",
-    ":npm"
+    ":npm",
+    ":disableRateLimiting",
+    ":enableVulnerabilityAlerts",
+    "group:monorepos"
   ],
   "ignoreDeps": ["node"],
   "assignees": ["eddiebeazer"],
