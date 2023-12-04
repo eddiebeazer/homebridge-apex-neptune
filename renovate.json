@@ -6,7 +6,8 @@
     ":automergeRequireAllStatusChecks",
     ":disableRateLimiting",
     ":automergeBranch",
-    "schedule:weekdays"
+    "schedule:weekdays",
+    "group:allNonMajor"
   ],
   "ignoreDeps": ["node"],
   "assignees": ["eddiebeazer"],
