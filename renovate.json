@@ -2,14 +2,11 @@
   "extends": [
     "config:best-practices",
     "config:js-app",
-    "npm:unpublishSafe",
     ":automergeMinor",
     ":automergeRequireAllStatusChecks",
-    ":npm",
     ":disableRateLimiting",
-    ":enableVulnerabilityAlerts",
-    "group:monorepos",
-    ":automergeBranch"
+    ":automergeBranch",
+    "schedule:weekdays"
   ],
   "ignoreDeps": ["node"],
   "assignees": ["eddiebeazer"],
