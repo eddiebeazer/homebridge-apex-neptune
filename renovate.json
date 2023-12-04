@@ -8,7 +8,8 @@
     ":npm",
     ":disableRateLimiting",
     ":enableVulnerabilityAlerts",
-    "group:monorepos"
+    "group:monorepos",
+    ":automergeBranch"
   ],
   "ignoreDeps": ["node"],
   "assignees": ["eddiebeazer"],
