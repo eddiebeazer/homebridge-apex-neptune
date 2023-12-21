@@ -6,10 +6,9 @@
     ":automergeRequireAllStatusChecks",
     ":disableRateLimiting",
     ":automergeBranch",
-    "schedule:weekdays",
+    "schedule:earlyMondays",
     "group:allNonMajor"
   ],
   "ignoreDeps": ["node"],
-  "assignees": ["eddiebeazer"],
-  "lockFileMaintenance": { "enabled": true }
+  "assignees": ["eddiebeazer"]
 }
