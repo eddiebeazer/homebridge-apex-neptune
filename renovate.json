@@ -6,7 +6,7 @@
     ":automergeRequireAllStatusChecks",
     ":disableRateLimiting",
     ":automergeBranch",
-    "schedule:earlyMondays",
+    "schedule:monthly",
     "group:allNonMajor"
   ],
   "ignoreDeps": ["node"],
